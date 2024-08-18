@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dictionary</title>
+    <style>
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+            color: #333;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 0 #fff;
+        }
+
+        
+        .hint {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            box-shadow: 4px 4px 0 #000;
+        }
+
+        
+        .input-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 20px;
+            display: flex;
+        }
+
+        
+        .input {
+            flex: 1;
+            height: 60px;
+            padding: 0 20px;
+            font-size: 1.2rem;
+            color: #000;
+            background-color: #fff;
+            border: 4px solid #000;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: 8px 8px 0 #000;
+            border-radius: 10px 0 0 10px;
+        }
+
+        .input::placeholder {
+            color: #888;
+        }
+
+        .input:hover {
+            transform: translate(-4px, -4px);
+            box-shadow: 12px 12px 0 #000;
+        }
+
+        .input:focus {
+            background-color: #e0e0e0;
+            color: #000;
+            border-color: #000;
+        }
+
+        
+        .search-button {
+            width: 60px;
+            height: 60px;
+            background-color: #000;
+            color: #fff;
+            border: 4px solid #000;
+            border-left: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 8px 8px 0 #000;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .search-button:hover {
+            background-color: #333;
+            transform: translate(-4px, -4px);
+            box-shadow: 12px 12px 0 #000;
+        }
+
+        
+        .result {
+            max-width: 500px;
+            background-color: #fff;
+            padding: 20px;
+            border: 4px solid #000;
+            box-shadow: 8px 8px 0 #000;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+
+        .result h2 {
+            margin-bottom: 10px;
+        }
+
+        .result p {
+            margin-bottom: 5px;
+        }
+
+        .error {
+            color: red;
+        }
+
+        
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .input, .search-button {
+                height: 50px;
+            }
+
+            .input {
+                font-size: 1rem;
+            }
+
+            .search-button {
+                font-size: 1.2rem;
+            }
+
+            .result {
+                font-size: 1rem;
+            }
+        }
+    </style>
+
+</head>
+<body>
+    <div class="hint">Type a word and press Enter or click the search button</div>
+    <h1>📚 Dictionary</h1>
+    <div class="input-container">
+        <input type="text" class="input" id="wordInput" placeholder="Enter a word..." />
+        <button class="search-button" id="searchButton">🔍</button>
+    </div>
+    <div id="result" class="result"></div>
+
+    <script>
+        const wordInput = document.getElementById('wordInput');
+        const searchButton = document.getElementById('searchButton');
+        const resultDiv = document.getElementById('result');
+
+        
+        wordInput.addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                let word = event.target.value.trim();
+                if (word) {
+                    fetchMeaning(word);
+                }
+            }
+        });
+
+        
+        searchButton.addEventListener('click', function() {
+            let word = wordInput.value.trim();
+            if (word) {
+                fetchMeaning(word);
+            }
+        });
+
+        function fetchMeaning(word) {
+            resultDiv.innerHTML = 'Searching...';
+            fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.title) {
+                        resultDiv.innerHTML = `<div class="error">❌ Word not found!</div>`;
+                    } else {
+                        const wordData = data[0];
+                        const meanings = wordData.meanings;
+                        let definitions = '';
+
+                        meanings.forEach((meaning, index) => {
+                            definitions += `
+                                <h2>${index + 1}. (${meaning.partOfSpeech})</h2>
+                                <p>Definition: ${meaning.definitions[0].definition}</p>
+                                ${meaning.definitions[0].example ? `<p>Example: ${meaning.definitions[0].example}</p>` : ''}
+                                <hr>
+                            `;
+                        });
+
+                        resultDiv.innerHTML = `
+                            <h2>📖 ${wordData.word}</h2>
+                            ${definitions}
+                        `;
+                    }
+                })
+                .catch(() => {
+                    resultDiv.innerHTML = `<div class="error">⚠️ Error fetching data. Please check your internet connection and try again.</div>`;
+                });
+        }
+    </script>
+</body>
+</html>
