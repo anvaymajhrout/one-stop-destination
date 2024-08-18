@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dad Joke Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Fredoka One', sans-serif;
+            background: radial-gradient(circle, #ff7e5f, #feb47b);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            color: #333;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #ff6f61;
+        }
+
+        .joke {
+            font-size: 1.6rem;
+            margin-bottom: 30px;
+            line-height: 1.4;
+            background: #333;
+            padding: 20px;
+            border-radius: 15px;
+            color: #ffffff;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background-color: #ff6f61;
+            border: none;
+            border-radius: 15px;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .btn:hover {
+            background-color: #e85d50;
+            transform: scale(1.05);
+        }
+
+        .speaker {
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dad Jokes</h1>
+        <div class="joke">Click the button to get a hilarious dad joke!</div>
+        <div class="controls">
+            <button class="btn" onclick="fetchJoke()">Generate Joke</button>
+            <img src="https://img.icons8.com/material-rounded/24/000000/speaker.png" alt="Speak" class="speaker" onclick="speakJoke()">
+        </div>
+        <div class="controls">
+            <button class="btn" onclick="copyJoke()">Copy Joke</button>
+            <button class="btn" onclick="downloadJoke()">Download as Image</button>
+        </div>
+    </div>
+
+    <script>
+        function fetchJoke() {
+            fetch('https://icanhazdadjoke.com/', {
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.querySelector('.joke').textContent = data.joke;
+            })
+            .catch(error => {
+                document.querySelector('.joke').textContent = 'Sorry, something went wrong. Please try again later.';
+                console.error('Error:', error);
+            });
+        }
+
+        function speakJoke() {
+            const jokeText = document.querySelector('.joke').textContent;
+            const speech = new SpeechSynthesisUtterance(jokeText);
+            speech.lang = 'en-US';
+            window.speechSynthesis.speak(speech);
+        }
+
+        function copyJoke() {
+            const jokeText = document.querySelector('.joke').textContent;
+            navigator.clipboard.writeText(jokeText).then(() => {
+                alert('Joke copied to clipboard!');
+            });
+        }
+
+        function downloadJoke() {
+            const jokeText = document.querySelector('.joke').textContent;
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 800;
+            canvas.height = 300;
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#333333";
+            ctx.font = "28px Fredoka One";
+            ctx.textAlign = "center";
+            wrapText(ctx, jokeText, canvas.width / 2, 150, 750, 35);
+            const link = document.createElement('a');
+            link.download = 'dad-joke.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+            const words = text.split(' ');
+            let line = '';
+            let lineHeightOffset = 0;
+
+            for(let n = 0; n < words.length; n++) {
+                let testLine = line + words[n] + ' ';
+                let metrics = ctx.measureText(testLine);
+                let testWidth = metrics.width;
+
+                if (testWidth > maxWidth && n > 0) {
+                    ctx.fillText(line, x, y + lineHeightOffset);
+                    line = words[n] + ' ';
+                    lineHeightOffset += lineHeight;
+                } else {
+                    line = testLine;
+                }
+            }
+            ctx.fillText(line, x, y + lineHeightOffset);
+        }
+    </script>
+</body>
+</html>
