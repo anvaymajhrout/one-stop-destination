@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bhagavad Gita Verse </title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(120deg, #d2d439 0%, #e1a013 100%);
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h1 {
+            font-family: 'Baloo 2', cursive;
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #357db1;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .verse-container {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.4);
+            max-width: 800px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .verse {
+            font-size: 1.6rem;
+            font-weight: 400;
+            margin-bottom: 20px;
+            color: #fff;
+            background-color: rgba(237, 70, 19, 0.4);
+            padding: 20px;
+            border-radius: 10px;
+            line-height: 1.5;
+        }
+
+        .chapter {
+            font-size: 1.4rem;
+            margin-bottom: 30px;
+            color: #f3e5f5;
+            font-weight: bold;
+        }
+
+        button, select {
+            background-color: #35b13d;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            margin: 10px;
+        }
+
+        button:hover, select:hover {
+            background-color: #148c40;
+            transform: translateY(-3px);
+        }
+
+        select {
+            font-size: 1rem;
+            background-color: #35b18e;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .verse span {
+            display: block;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Bhagavad Gita Verse</h1>
+    <div class="verse-container">
+        <select id="languageSelector" onchange="fetchRandomVerse()">
+            <option value="english">English</option>
+            <option value="hindi">Hindi</option>
+        </select>
+        <p class="verse" id="verse">Select a language and click the button to get a verse from the Bhagavad Gita</p>
+        <p class="chapter" id="chapter"></p>
+        <button onclick="fetchRandomVerse()">Get Verse</button>
+    </div>
+
+    <script>
+        const verses = {
+            english: [
+                { text: "You have a right to perform your prescribed duties, but you are not entitled to the fruits of your actions.", chapter: 2, verse: 47 },
+                { text: "One who is not disturbed by the incessant flow of desires that enter like rivers into the ocean, which is being filled but is always still, can alone achieve peace, and not the person who strives to satisfy such desires.", chapter: 2, verse: 70 },
+                { text: "The soul is neither born, and nor does it die.", chapter: 2, verse: 20 },
+                { text: "Actions performed with a selfish desire are like a river that has lost its way.", chapter: 2, verse: 30 },
+                { text: "There is neither this world, nor the world beyond. Nor happiness for the one who doubts.", chapter: 4, verse: 40 },
+                { text: "A person is made by their belief. As they believe, so they are.", chapter: 17, verse: 3 },
+                { text: "One who has conquered themselves is greater than one who has conquered thousands in battle.", chapter: 6, verse: 5 },
+                { text: "The mind is restless and difficult to control, but it can be trained by practice and detachment.", chapter: 6, verse: 35 },
+                { text: "There is nothing lost or wasted in this life. Every effort is worthwhile.", chapter: 2, verse: 40 },
+                { text: "The person who is unaffected by the joys and sorrows of life is a true yogi.", chapter: 12, verse: 15 },
+                { text: "He who has mastered the yoga of detachment, finds bliss in every situation.", chapter: 2, verse: 70 },
+                { text: "The purpose of life is not to be happy. It is to be useful, to be honorable, to be compassionate, to have it make some difference that you have lived and lived well.", chapter: 4, verse: 7 },
+                { text: "The wise see the divine presence in every creature.", chapter: 4, verse: 24 },
+                { text: "Be steadfast in yoga, O Arjuna. Perform your duty and abandon all attachment to success or failure.", chapter: 2, verse: 48 },
+                { text: "The soul is eternal, the body is temporary. Understand the difference between the two.", chapter: 2, verse: 13 },
+                { text: "Wisdom is the ability to see things as they are.", chapter: 4, verse: 38 },
+                { text: "Perform your actions without attachment and without expecting any result.", chapter: 3, verse: 19 },
+                { text: "Those who have reached enlightenment live in harmony with the universe.", chapter: 9, verse: 22 },
+                { text: "One who is not attached to material desires finds true happiness.", chapter: 5, verse: 21 },
+                { text: "The person who is devoted to the path of selfless action attains true wisdom.", chapter: 3, verse: 19 },
+                { text: "A person who is not disturbed by the constant flow of desires that enter like rivers into the ocean, which is being filled but is always still, can alone achieve peace.", chapter: 2, verse: 70 },
+                { text: "He who has no attachments can really love others.", chapter: 12, verse: 13 },
+                { text: "The person who has conquered themselves is greater than the one who has conquered thousands in battle.", chapter: 6, verse: 5 },
+                { text: "Seek refuge in the divine wisdom. It will guide you through your life.", chapter: 7, verse: 19 },
+                { text: "Those who seek liberation through knowledge are superior to those who seek liberation through devotion.", chapter: 9, verse: 22 },
+                { text: "The soul is never born and never dies. It is eternal.", chapter: 2, verse: 20 },
+                { text: "One who is without attachment, who has conquered the mind, and who is free from doubts, is said to be steadfast in wisdom.", chapter: 4, verse: 39 },
+                { text: "The divine is present in the heart of all beings. Seek it there.", chapter: 10, verse: 20 },
+                { text: "He who is steadfast in his duty and performs it with devotion is considered a true yogi.", chapter: 12, verse: 11 },
+                { text: "One who has conquered the senses is said to be truly enlightened.", chapter: 6, verse: 23 },
+                { text: "The eternal soul is beyond birth and death. It is everlasting.", chapter: 2, verse: 20 },
+                { text: "Those who are devoted to the path of knowledge and wisdom achieve liberation.", chapter: 7, verse: 19 },
+                { text: "The one who sees the divine presence in all beings is said to have attained true wisdom.", chapter: 12, verse: 13 },
+                { text: "The soul is neither born, and nor does it die. It is eternal.", chapter: 2, verse: 20 },
+                { text: "One who has no attachments can really love others.", chapter: 12, verse: 13 },
+                { text: "The wise see all beings as equal and are unaffected by material pleasures and pains.", chapter: 5, verse: 7 },
+                { text: "The true yogi is one who sees the divine in every living being.", chapter: 12, verse: 13 },
+                { text: "The divine essence resides in every heart. Seek it within yourself.", chapter: 10, verse: 20 },
+                { text: "One who has mastered the art of detachment finds ultimate peace.", chapter: 6, verse: 20 },
+                { text: "The true yogi performs their duties with a sense of detachment and devotion.", chapter: 12, verse: 11 },
+                { text: "One who has conquered the senses is said to be truly enlightened.", chapter: 6, verse: 23 },
+                { text: "The eternal soul is beyond birth and death. It is everlasting.", chapter: 2, verse: 20 },
+                { text: "Those who are devoted to the path of knowledge and wisdom achieve liberation.", chapter: 7, verse: 19 },
+                { text: "The one who sees the divine presence in all beings is said to have attained true wisdom.", chapter: 12, verse: 13 }
+            ],
+            hindi: [
+                { text: "तुम्हारा अधिकार केवल कर्म करने पर है, उसके फल पर नहीं।", chapter: 2, verse: 47 },
+                { text: "जो व्यक्ति इच्छाओं की अविरल धारा से परेशान नहीं होता, जो नदियों की तरह समुद्र में प्रवाहित होती हैं, जो भरता रहता है लेकिन हमेशा स्थिर रहता है, वही शांति प्राप्त कर सकता है।", chapter: 2, verse: 70 },
+                { text: "आत्मा न तो जन्मती है और न ही मरती है।", chapter: 2, verse: 20 },
+                { text: "स्वार्थी इच्छा के साथ किए गए कर्म एक नदी की तरह होते हैं जो अपने मार्ग से भटक गई हो।", chapter: 2, verse: 30 },
+                { text: "इस संसार में न कोई लाभ है, न ही अगले संसार में। न ही संशय करने वाले को सुख प्राप्त होता है।", chapter: 4, verse: 40 },
+                { text: "एक व्यक्ति अपने विश्वास से बनता है। जैसा वह विश्वास करता है, वैसा ही वह बनता है।", chapter: 17, verse: 3 },
+                { text: "जो व्यक्ति स्वयं को जीत लेता है, वह हजारों युद्धों को जीतने वाले से भी बड़ा है।", chapter: 6, verse: 5 },
+                { text: "मन अशांत और नियंत्रित करने में कठिन होता है, लेकिन इसे अभ्यास और वैराग्य से प्रशिक्षित किया जा सकता है।", chapter: 6, verse: 35 },
+                { text: "इस जीवन में कुछ भी खोया या बर्बाद नहीं होता। हर प्रयास महत्वपूर्ण है।", chapter: 2, verse: 40 },
+                { text: "जो व्यक्ति जीवन के सुखों और दुखों से प्रभावित नहीं होता, वह सच्चा योगी है।", chapter: 12, verse: 15 },
+                { text: "जो व्यक्ति निष्काम कर्म योग में सिद्ध है, वह हर स्थिति में आनंदित रहता है।", chapter: 2, verse: 70 },
+                { text: "जीवन का उद्देश्य खुश रहना नहीं है। इसका उद्देश्य उपयोगी होना, सम्मानित होना, दयालु होना है।", chapter: 4, verse: 7 },
+                { text: "सच्चा ज्ञान वही है, जो सभी प्राणियों में दिव्य तत्व को देखे।", chapter: 4, verse: 24 },
+                { text: "योग में दृढ़ रहो, ओ अर्जुन। अपने कर्तव्य का पालन करो और सफलता या विफलता से मोह छोड़ दो।", chapter: 2, verse: 48 },
+                { text: "आत्मा शाश्वत है और नष्ट नहीं होती। इसे समझो।", chapter: 2, verse: 13 },
+                { text: "ज्ञान वह है, जो चीजों को जैसा हैं, वैसे देखे।", chapter: 4, verse: 38 },
+                { text: "अपने कर्मों को फल के बिना और बिना किसी अपेक्षा के करो। यह सच्चा ज्ञान है।", chapter: 3, verse: 19 },
+                { text: "जो व्यक्ति आत्मज्ञान की ओर अग्रसर है, वह सच्चे आनंद की प्राप्ति करता है।", chapter: 9, verse: 22 },
+                { text: "जो व्यक्ति भौतिक इच्छाओं से अनattached है, वह सच्चे आनंद को प्राप्त करता है।", chapter: 5, verse: 21 },
+                { text: "जो व्यक्ति स्वयं को और सच्चे समर्पण को खोजता है, वह मोक्ष प्राप्त करता है।", chapter: 3, verse: 19 },
+                { text: "जो व्यक्ति इच्छाओं की निरंतर धारा से परेशान नहीं होता, वह शांति प्राप्त करता है।", chapter: 2, verse: 70 },
+                { text: "जो व्यक्ति बिना किसी मोह के रह सकता है, वह सच्चा प्रेम कर सकता है।", chapter: 12, verse: 13 },
+                { text: "जो व्यक्ति स्वयं को विजय कर लेता है, वह युद्ध में हजारों को जीतने वाले से भी बड़ा है।", chapter: 6, verse: 5 },
+                { text: "ईश्वर के प्रति समर्पण से सच्ची दिशा प्राप्त होगी।", chapter: 7, verse: 19 },
+                { text: "जो व्यक्ति ज्ञान और समर्पण के मार्ग पर चलता है, वह मोक्ष प्राप्त करता है।", chapter: 9, verse: 22 },
+                { text: "आत्मा न कभी जन्मती है और न मरती है। यह शाश्वत है।", chapter: 2, verse: 20 },
+                { text: "निष्काम कर्म और समर्पण से मोक्ष प्राप्त होता है।", chapter: 4, verse: 19 },
+                { text: "जो व्यक्ति हर जीव में दिव्य तत्व को देखता है, वही सच्चे ज्ञान को प्राप्त करता है।", chapter: 12, verse: 13 },
+                { text: "जो व्यक्ति भौतिक इच्छाओं से अattached होता है, वही ज्ञान प्राप्त करता है।", chapter: 4, verse: 39 },
+                { text: "दुःख को पार करने के लिए, भीतर के दिव्य तत्व की खोज करो।", chapter: 7, verse: 19 },
+                { text: "जो व्यक्ति मन को जीत लेता है, वह सच्चे शांति और आनंद को प्राप्त करता है।", chapter: 6, verse: 5 },
+                { text: "जो व्यक्ति कर्मों को परिणाम के बिना करता है, वह बंधन से मुक्त हो जाता है।", chapter: 3, verse: 19 },
+                { text: "जो व्यक्ति ईश्वर के प्रति समर्पित होता है, वही सच्चे संतोष और खुशी को प्राप्त करता है।", chapter: 9, verse: 22 },
+                { text: "दिव्य तत्व हर दिल में निवास करता है। इसे अपने भीतर खोजो।", chapter: 10, verse: 20 },
+                { text: "सच्चा योगी वही है जो अपने कर्तव्यों को समर्पण और निष्कामता के साथ करता है।", chapter: 12, verse: 11 },
+                { text: "जो व्यक्ति इंद्रियों को जीत लेता है, वही सच्चा ज्ञानी है।", chapter: 6, verse: 23 },
+                { text: "आत्मा शाश्वत है, जन्म और मृत्यु से परे है।", chapter: 2, verse: 20 },
+                { text: "ज्ञान और समझ के मार्ग पर चलने वाले मोक्ष प्राप्त करते हैं।", chapter: 7, verse: 19 },
+                { text: "जो व्यक्ति हर प्राणी में दिव्य तत्व को देखता है, वही सच्चे ज्ञान को प्राप्त करता है।", chapter: 12, verse: 13 }
+            ]
+        };
+
+        function fetchRandomVerse() {
+            const language = document.getElementById('languageSelector').value;
+            const versesArray = verses[language];
+            const randomIndex = Math.floor(Math.random() * versesArray.length);
+            const verse = versesArray[randomIndex];
+            document.getElementById('verse').innerText = `"${verse.text}"`;
+            document.getElementById('chapter').innerHTML = `<strong>Chapter ${verse.chapter}, Verse ${verse.verse}</strong>`;
+        }
+    </script>
+</body>
+
+</html>
+
+
