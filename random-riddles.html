@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Riddle Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1f4037, #99f2c8);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background: #333;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 30px;
+            color: #ffb347;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .riddle-container {
+            margin-bottom: 25px;
+            background: #444;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .riddle-container:hover {
+            transform: scale(1.05);
+        }
+
+        .riddle {
+            font-size: 1.6rem;
+            color: #ffdd57;
+            margin-bottom: 15px;
+        }
+
+        .answer {
+            font-size: 1.4rem;
+            color: #66ff99;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            background-color: #ff6347;
+            border: none;
+            border-radius: 15px;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s;
+            font-size: 1.2rem;
+            margin: 10px;
+            text-transform: uppercase;
+        }
+
+        .btn:hover {
+            background-color: #e5533d;
+            transform: scale(1.05);
+        }
+
+        .btn-secondary {
+            background-color: #66ff99;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background-color: #57cc80;
+        }
+
+        .btn-answer {
+            background-color: #3498db;
+            color: #fff;
+            margin-top: 20px;
+        }
+
+        .btn-answer:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Random Riddle Generator</h1>
+        <div class="riddle-container" id="riddleContainer" onclick="toggleAnswer()">
+            <div class="riddle" id="riddle">Press the button to generate a riddle!</div>
+            <div class="answer" id="answer"></div>
+        </div>
+        <button class="btn" onclick="generateRiddle()">Generate Riddle</button>
+        <button class="btn btn-secondary" onclick="copyRiddle()">Copy Riddle</button>
+        <button class="btn btn-secondary" onclick="downloadRiddle()">Download Riddle</button>
+        <button class="btn btn-answer" id="showAnswerBtn" onclick="toggleAnswer()">Show Answer</button>
+    </div>
+
+    <script>
+        function generateRiddle() {
+            fetch('https://riddles-api.vercel.app/random')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('riddle').innerText = data.riddle;
+                    document.getElementById('answer').innerText = `Answer: ${data.answer}`;
+                    document.getElementById('answer').style.display = 'none';
+                    document.getElementById('showAnswerBtn').style.display = 'inline-block';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('riddle').innerText = 'Failed to load riddle. Please try again.';
+                    document.getElementById('answer').innerText = '';
+                    document.getElementById('showAnswerBtn').style.display = 'none';
+                });
+        }
+
+        function toggleAnswer() {
+            const answerElement = document.getElementById('answer');
+            const buttonText = document.getElementById('showAnswerBtn');
+
+            if (answerElement.style.display === 'none') {
+                answerElement.style.display = 'block';
+                buttonText.innerText = 'Hide Answer';
+            } else {
+                answerElement.style.display = 'none';
+                buttonText.innerText = 'Show Answer';
+            }
+        }
+
+        function copyRiddle() {
+            const riddleText = document.getElementById('riddle').innerText;
+            const answerText = document.getElementById('answer').innerText;
+            const fullText = `${riddleText}\n\n${answerText}`;
+
+            navigator.clipboard.writeText(fullText).then(() => {
+                alert('Riddle copied to clipboard!');
+            }).catch(error => {
+                console.error('Error copying riddle:', error);
+            });
+        }
+
+        function downloadRiddle() {
+            const riddleText = document.getElementById('riddle').innerText;
+            const answerText = document.getElementById('answer').innerText;
+            const fullText = `${riddleText}\n\n${answerText}`;
+
+            const blob = new Blob([fullText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'riddle.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        window.onload = generateRiddle;
+    </script>
+</body>
+</html>
+
