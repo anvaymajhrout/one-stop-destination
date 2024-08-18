@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stylish Joke Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+            text-align: center;
+            max-width: 700px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #ffd700;
+            letter-spacing: 2px;
+        }
+
+        select {
+            width: 90%;
+            padding: 12px;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+            background-color: #ffd700;
+            color: #333;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        select:hover {
+            background-color: #ffb700;
+        }
+
+        .joke {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            word-wrap: break-word;
+            line-height: 1.5;
+            background: #333;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background-color: #ffd700;
+            border: none;
+            border-radius: 10px;
+            color: #333;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            background-color: #ffb700;
+            transform: scale(1.05);
+        }
+
+        .speaker {
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+        }
+
+        .hint {
+            font-size: 0.9rem;
+            color: #ddd;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Joke Generator</h1>
+        <select id="jokeCategory">            
+<option value="general">General</option>
+<option value="programming">Programming</option>
+<option value="knock-knock">Knock-Knock</option>
+<option value="any">Random</option>
+<option value="pun">Pun</option>
+        </select>
+        <div class="joke">Select a category and click the button to generate a joke!</div>
+        <div class="controls">
+            <button class="btn" onclick="fetchJoke()">Generate Joke</button>
+            <img src="https://img.icons8.com/material-rounded/24/ffffff/speaker.png" alt="Speak" class="speaker" onclick="speakJoke()">
+        </div>
+        <div class="controls">
+            <button class="btn" onclick="copyJoke()">Copy Joke</button>
+            <button class="btn" onclick="downloadJoke()">Download as Image</button>
+        </div>
+        <div class="hint">Hint: Click the speaker icon to hear the joke!</div>
+    </div>
+
+    <script>
+        function fetchJoke() {
+            const category = document.getElementById('jokeCategory').value;
+            fetch(`https://v2.jokeapi.dev/joke/${category}?type=single`)
+            .then(response => response.json())
+            .then(data => {
+                document.querySelector('.joke').textContent = data.joke;
+            })
+            .catch(error => {
+                document.querySelector('.joke').textContent = 'Sorry, something went wrong. Please try again later.';
+                console.error('Error:', error);
+            });
+        }
+
+        function speakJoke() {
+            const jokeText = document.querySelector('.joke').textContent;
+            const speech = new SpeechSynthesisUtterance(jokeText);
+            speech.lang = 'en-US';
+            window.speechSynthesis.speak(speech);
+        }
+
+        function copyJoke() {
+            const jokeText = document.querySelector('.joke').textContent;
+            navigator.clipboard.writeText(jokeText).then(() => {
+                alert('Joke copied to clipboard!');
+            });
+        }
+
+        function downloadJoke() {
+            const jokeText = document.querySelector('.joke').textContent;
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 800;
+            canvas.height = 300;
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#000000";
+            ctx.font = "24px Poppins";
+            ctx.textAlign = "center";
+            wrapText(ctx, jokeText, canvas.width / 2, 150, 750, 30);
+            const link = document.createElement('a');
+            link.download = 'joke.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+            const words = text.split(' ');
+            let line = '';
+            let lineHeightOffset = 0;
+
+            for(let n = 0; n < words.length; n++) {
+                let testLine = line + words[n] + ' ';
+                let metrics = ctx.measureText(testLine);
+                let testWidth = metrics.width;
+
+                if (testWidth > maxWidth && n > 0) {
+                    ctx.fillText(line, x, y + lineHeightOffset);
+                    line = words[n] + ' ';
+                    lineHeightOffset += lineHeight;
+                } else {
+                    line = testLine;
+                }
+            }
+            ctx.fillText(line, x, y + lineHeightOffset);
+        }
+    </script>
+</body>
+</html>
