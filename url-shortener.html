@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stylish URL Shortener</title>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #00b09b, #96c93d);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .shortener-container {
+            background-color: #ffffff;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            max-width: 700px;
+            width: 100%;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .shortener-container:hover {
+            transform: translateY(-10px);
+        }
+
+        h1 {
+            font-size: 3.5em;
+            margin-bottom: 40px;
+            color: #00b09b;
+            font-family: 'Raleway', sans-serif;
+            letter-spacing: 2px;
+        }
+
+        .input-group {
+            margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .brutalist-container {
+            position: relative;
+            width: 100%;
+            font-family: monospace;
+        }
+
+        .brutalist-input {
+            width: 100%;
+            padding: 20px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #000;
+            background-color: #fff;
+            border: 4px solid #000;
+            position: relative;
+            overflow: hidden;
+            border-radius: 0;
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 5px 5px 0 #000, 10px 10px 0 #4a90e2;
+        }
+
+        .brutalist-input:focus {
+            animation: focus-pulse 4s cubic-bezier(0.25, 0.8, 0.25, 1) infinite,
+                glitch 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) infinite;
+        }
+
+        @keyframes glitch {
+            0% {
+                transform: translate(0);
+            }
+
+            20% {
+                transform: translate(-2px, 2px);
+            }
+
+            40% {
+                transform: translate(-2px, -2px);
+            }
+
+            60% {
+                transform: translate(2px, 2px);
+            }
+
+            80% {
+                transform: translate(2px, -2px);
+            }
+
+            100% {
+                transform: translate(0);
+            }
+        }
+
+        .brutalist-input:focus::after {
+            content: "";
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: white;
+            z-index: -1;
+        }
+
+        .brutalist-input:focus::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: -2;
+            clip-path: inset(0 100% 0 0);
+            animation: glitch-slice 4s steps(2, end) infinite;
+        }
+
+        @keyframes glitch-slice {
+            0% {
+                clip-path: inset(0 100% 0 0);
+            }
+
+            10% {
+                clip-path: inset(0 5% 0 0);
+            }
+
+            20% {
+                clip-path: inset(0 80% 0 0);
+            }
+
+            30% {
+                clip-path: inset(0 10% 0 0);
+            }
+
+            40% {
+                clip-path: inset(0 50% 0 0);
+            }
+
+            50% {
+                clip-path: inset(0 30% 0 0);
+            }
+
+            60% {
+                clip-path: inset(0 70% 0 0);
+            }
+
+            70% {
+                clip-path: inset(0 15% 0 0);
+            }
+
+            80% {
+                clip-path: inset(0 90% 0 0);
+            }
+
+            90% {
+                clip-path: inset(0 5% 0 0);
+            }
+
+            100% {
+                clip-path: inset(0 100% 0 0);
+            }
+        }
+
+        .shortened-url {
+            font-size: 24px;
+            margin-top: 20px;
+            color: #4a90e2;
+            word-break: break-all;
+        }
+
+        .shortened-url a {
+            color: #4a90e2;
+            text-decoration: none;
+        }
+
+        .shortened-url a:hover {
+            text-decoration: underline;
+        }
+
+        .button {
+            font-family: inherit;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 17px;
+            padding: 0.8em 1.5em;
+            color: white;
+            background: linear-gradient(90deg, rgba(77, 54, 208, 1) 0%, rgba(132, 116, 254, 1) 100%);
+            border: none;
+            box-shadow: 0 0.7em 1.5em -0.5em #4d36d0be;
+            letter-spacing: 0.05em;
+            border-radius: 20em;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .button:hover {
+            box-shadow: 0 0.5em 1.5em -0.5em #4d36d0be;
+        }
+
+        .button:active {
+            box-shadow: 0 0.3em 1em -0.5em #4d36d0be;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="shortener-container">
+        <h1>URL Shortener</h1>
+        <div class="input-group">
+            <div class="brutalist-container">
+                <input type="text" id="urlInput" class="brutalist-input" placeholder="Enter URL here">
+            </div>
+            <button class="button" onclick="shortenUrl()">Shorten URL</button>
+        </div>
+        <div id="shortenedUrl" class="shortened-url"></div>
+    </div>
+
+    <script>
+        async function shortenUrl() {
+            const url = document.getElementById('urlInput').value;
+
+            if (!url) {
+                alert('Please enter a URL.');
+                return;
+            }
+
+            const apiUrl = 'https://shorten-rest.p.rapidapi.com/aliases';
+            const options = {
+                method: 'POST',
+                headers: {
+                    'x-rapidapi-key': '1debec99f7mshf1a911c37d0ef67p1a9916jsn678d09783472',
+                    'x-rapidapi-host': 'shorten-rest.p.rapidapi.com',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ aliasName: '', domainName: url })
+            };
+
+            try {
+                const response = await fetch(apiUrl, options);
+                const result = await response.json();
+
+                const shortUrl = result.result_url || 'Error generating URL';
+
+                document.getElementById('shortenedUrl').innerHTML = `<a href="${shortUrl}" target="_blank">${shortUrl}</a>`;
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('shortenedUrl').textContent = 'An error occurred. Please try again.';
+            }
+        }
+    </script>
+</body>
+
+</html>
