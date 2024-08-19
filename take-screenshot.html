@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Screenshot Taker</title>
+    <style>
+        :root {
+            --primary-color: #FF6347;
+            --secondary-color: #F8F8FF;
+            --background-color: #2F4F4F;
+            --text-color: #FFFFFF;
+            --button-hover-color: #FF4500;
+            --font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        header {
+            padding: 20px;
+            background-color: var(--primary-color);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        button {
+            padding: 15px 30px;
+            margin: 20px 10px;
+            border-radius: 10px;
+            border: none;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: var(--button-hover-color);
+        }
+
+        .content {
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 800px;
+            background-color: var(--secondary-color);
+            color: var(--background-color);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .chrome-only {
+            margin-top: 20px;
+            color: var(--text-color);
+            font-size: 1.2em;
+            background-color: var(--primary-color);
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 400px;
+            margin: 20px auto;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>Advanced Screenshot Taker</h1>
+    </header>
+    <main>
+        <div class="content">
+            <h2>Enhanced Screenshot Functionality Coming Soon</h2>
+            <p>Currently, you can use a browser extension to take screenshots of other tabs or your entire desktop.</p>
+            <p>We are developing more features, so stay tuned!</p>
+        </div>
+        <div class="chrome-only">
+            <p><strong>Note:</strong> This extension is only valid for Chrome users.</p>
+            <a href="https://chromewebstore.google.com/detail/gofullpage-full-page-scre/fdpohaocaechififmbbbbbknoalclacl" target="_blank">
+                <button>Download Chrome Extension</button>
+            </a>
+        </div>
+    </main>
+</body>
+</html>
+
