@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #3a1c71, #d76d77, #ffaf7b);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background: #2d2d2d;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            max-width: 900px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 30px;
+            color: #ff6347;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .category-select, .question-count-select {
+            margin-bottom: 20px;
+        }
+
+        select {
+            padding: 10px;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            border: none;
+            background-color: #ff6347;
+            color: #fff;
+            cursor: pointer;
+            width: 100%;
+            max-width: 300px;
+            margin-bottom: 20px;
+        }
+
+        .question-container {
+            margin-bottom: 25px;
+            background: #444;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .question-container:hover {
+            transform: scale(1.05);
+        }
+
+        .question {
+            font-size: 1.6rem;
+            color: #ffdd57;
+            margin-bottom: 15px;
+        }
+
+        .options {
+            list-style: none;
+            padding: 0;
+        }
+
+        .options li {
+            background: #555;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .options li:hover {
+            background: #ff6347;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            background-color: #ff6347;
+            border: none;
+            border-radius: 15px;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            text-transform: uppercase;
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            background-color: #e5533d;
+            transform: scale(1.05);
+        }
+
+        .stopwatch {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #ffdd57;
+        }
+
+        .result {
+            font-size: 1.8rem;
+            margin-top: 20px;
+            color: #66ff99;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Interactive Quiz</h1>
+        <div class="category-select">
+            <select id="category">
+                <option value="9">General Knowledge</option>
+                <option value="21">Sports</option>
+                <option value="23">History</option>
+                <option value="17">Science & Nature</option>
+                <option value="18">Computers</option>
+            </select>
+        </div>
+        <div class="question-count-select">
+            <select id="questionCount">
+                <option value="5">5 Questions</option>
+                <option value="10">10 Questions</option>
+                <option value="15">15 Questions</option>
+            </select>
+        </div>
+        <div class="stopwatch" id="stopwatch">Time: 00:00</div>
+        <div class="question-container" id="quizContainer">
+            <div class="question" id="question">Select a category and start the quiz!</div>
+            <ul class="options" id="options"></ul>
+            <button class="btn" id="nextQuestion" style="display:none;">Next</button>
+            <button class="btn" id="endQuiz" style="display:none;">End Quiz</button>
+        </div>
+        <button class="btn" id="startQuiz">Start Quiz</button>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        const categoryElement = document.getElementById('category');
+        const questionCountElement = document.getElementById('questionCount');
+        const startQuizButton = document.getElementById('startQuiz');
+        const nextQuestionButton = document.getElementById('nextQuestion');
+        const endQuizButton = document.getElementById('endQuiz');
+        const quizContainer = document.getElementById('quizContainer');
+        const questionElement = document.getElementById('question');
+        const optionsElement = document.getElementById('options');
+        const resultElement = document.getElementById('result');
+        const stopwatch = document.getElementById('stopwatch');
+
+        let questions = [];
+        let currentQuestionIndex = 0;
+        let correctAnswers = 0;
+        let timerInterval;
+        let totalSeconds = 0;
+
+        startQuizButton.addEventListener('click', startQuiz);
+        nextQuestionButton.addEventListener('click', showNextQuestion);
+        endQuizButton.addEventListener('click', endQuiz);
+
+        function startQuiz() {
+            const category = categoryElement.value;
+            const questionCount = questionCountElement.value;
+            fetchQuizData(category, questionCount);
+            startTimer();
+        }
+
+        function fetchQuizData(category, questionCount) {
+            const apiUrl = `https://opentdb.com/api.php?amount=${questionCount}&category=${category}&type=multiple`;
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    questions = data.results;
+                    showNextQuestion();
+                    startQuizButton.style.display = 'none';
+                    nextQuestionButton.style.display = 'inline-block';
+                    endQuizButton.style.display = 'inline-block';
+                })
+                .catch(error => console.error('Error fetching quiz data:', error));
+        }
+
+        function showNextQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                endQuiz();
+                return;
+            }
+
+            const questionData = questions[currentQuestionIndex];
+            questionElement.innerHTML = decodeHTML(questionData.question);
+            const options = [...questionData.incorrect_answers];
+            options.push(questionData.correct_answer);
+            options.sort(() => Math.random() - 0.5);
+            optionsElement.innerHTML = '';
+
+            options.forEach(option => {
+                const li = document.createElement('li');
+                li.textContent = decodeHTML(option);
+                li.addEventListener('click', () => checkAnswer(option, questionData.correct_answer));
+                optionsElement.appendChild(li);
+            });
+
+            currentQuestionIndex++;
+        }
+
+        function checkAnswer(selectedOption, correctAnswer) {
+            if (selectedOption === correctAnswer) {
+                correctAnswers++;
+            }
+            showNextQuestion();
+        }
+
+        function endQuiz() {
+            clearInterval(timerInterval);
+            quizContainer.style.display = 'none';
+            resultElement.innerHTML = `Quiz Finished! You got ${correctAnswers} out of ${questions.length} correct. Total time: ${formatTime(totalSeconds)}.`;
+        }
+
+        function startTimer() {
+            totalSeconds = 0;
+            timerInterval = setInterval(() => {
+                totalSeconds++;
+                stopwatch.innerHTML = `Time: ${formatTime(totalSeconds)}`;
+            }, 1000);
+        }
+
+        function formatTime(totalSeconds) {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function decodeHTML(html) {
+            const txt = document.createElement("textarea");
+            txt.innerHTML = html;
+            return txt.value;
+        }
+    </script>
+</body>
+</html>
