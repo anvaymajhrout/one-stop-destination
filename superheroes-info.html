@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Superhero Finder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto Slab', serif;
+            background-color: #121212;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            color: #ff5722;
+            letter-spacing: 2px;
+        }
+
+        .search-container {
+            margin: 30px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+            max-width: 500px;
+            background-color: #333;
+            border-radius: 50px;
+            padding: 10px 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        #search-input {
+            padding: 12px;
+            border: none;
+            border-radius: 50px;
+            width: 100%;
+            font-size: 1.2rem;
+            background-color: #222;
+            color: #ffffff;
+            outline: none;
+        }
+
+        #search-button {
+            padding: 12px 25px;
+            background-color: #ff5722;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #search-button:hover {
+            background-color: #e64a19;
+        }
+
+        .result-container {
+            margin-top: 30px;
+            width: 90%;
+            max-width: 800px;
+            background-color: #1e1e1e;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .result-container h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: #ffeb3b;
+        }
+
+        .result-container p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin: 10px 0;
+        }
+
+        .result-container img {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #bdbdbd;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Superhero Finder</h1>
+    </header>
+    <main>
+        <section class="search-container">
+            <input type="text" id="search-input" placeholder="Enter superhero name...">
+            <button id="search-button">Search</button>
+        </section>
+        <section id="result-container" class="result-container">
+            
+        </section>
+    </main>
+    <footer>
+        <p>Powered by Superhero API</p>
+    </footer>
+    <script>
+        const apiKey = 'apinotenteredsecurity';  
+        const searchInput = document.getElementById('search-input');
+        const searchButton = document.getElementById('search-button');
+        const resultContainer = document.getElementById('result-container');
+
+        searchButton.addEventListener('click', () => {
+            const superheroName = searchInput.value.trim();
+            if (superheroName) {
+                fetchSuperheroData(superheroName);
+            } else {
+                alert('Please enter a superhero name.');
+            }
+        });
+
+        async function fetchSuperheroData(name) {
+            const apiUrl = `https://www.superheroapi.com/api.php/${apiKey}/search/${name}`;
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                if (data.response === 'success') {
+                    displaySuperheroInfo(data.results[0]);
+                } else {
+                    resultContainer.innerHTML = `<p>No superhero found with the name "${name}".</p>`;
+                }
+            } catch (error) {
+                console.error('Error fetching superhero data:', error);
+                resultContainer.innerHTML = `<p>There was an error fetching the superhero data. Please try again later.</p>`;
+            }
+        }
+
+        function displaySuperheroInfo(superhero) {
+            resultContainer.innerHTML = `
+                <img src="${superhero.image.url}" alt="${superhero.name}">
+                <h2>${superhero.name}</h2>
+                <p><strong>Full Name:</strong> ${superhero.biography['full-name']}</p>
+                <p><strong>Publisher:</strong> ${superhero.biography.publisher}</p>
+                <p><strong>First Appearance:</strong> ${superhero.biography['first-appearance']}</p>
+                <p><strong>Power:</strong> ${superhero.powerstats.power}</p>
+                <p><strong>Occupation:</strong> ${superhero.work.occupation}</p>
+                <p><strong>Aliases:</strong> ${superhero.biography.aliases.join(', ')}</p>
+                <p><strong>Alignment:</strong> ${superhero.biography.alignment}</p>
+                <p><strong>Height:</strong> ${superhero.appearance.height.join(' / ')}</p>
+                <p><strong>Weight:</strong> ${superhero.appearance.weight.join(' / ')}</p>
+                <p><strong>Group Affiliation:</strong> ${superhero.connections['group-affiliation']}</p>
+            `;
+        }
+    </script>
+</body>
+
+</html>
