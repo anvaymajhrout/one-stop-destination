@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cocktail Recipe Finder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background-gradient: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+            --primary-color: #f8b400;
+            --secondary-color: #283e51;
+            --accent-color: #f85c50;
+            --text-color: #ffffff;
+            --hint-color: #f8b400;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--background-gradient);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            font-size: 3rem;
+        }
+
+        .search-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-bottom: 40px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            padding-right: 50px;
+            outline: none;
+        }
+
+        .hint {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background-color: var(--secondary-color);
+            color: var(--hint-color);
+            padding: 10px;
+            border-radius: 0 0 15px 15px;
+            display: none;
+            font-size: 1rem;
+            text-align: left;
+        }
+
+        .hint.visible {
+            display: block;
+        }
+
+        .search-container button {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .search-container button img {
+            width: 20px;
+            height: 20px;
+        }
+
+        .cocktail-card {
+            background-color: var(--secondary-color);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 20px 0;
+            width: 100%;
+            max-width: 900px;
+            display: none;
+            text-align: left;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .cocktail-card img {
+            width: 100%;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            height: 400px;
+            object-fit: cover;
+        }
+
+        .cocktail-card h2 {
+            color: var(--accent-color);
+            margin-bottom: 15px;
+            font-size: 2rem;
+        }
+
+        .cocktail-card p {
+            margin: 10px 0;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Cocktail Recipe Finder</h1>
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Search for a cocktail...">
+        <button onclick="searchCocktail()">
+            <img src="https://img.icons8.com/ios-glyphs/30/ffffff/search--v1.png" alt="Search">
+        </button>
+        <div id="hintBox" class="hint"></div>
+    </div>
+    <div id="cocktailCard" class="cocktail-card"></div>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const hintBox = document.getElementById('hintBox');
+        const cocktailCard = document.getElementById('cocktailCard');
+
+        searchInput.addEventListener('input', showHints);
+
+        function showHints() {
+            const query = searchInput.value;
+            if (query.length > 2) {
+                fetch(`https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${query}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.drinks) {
+                            const hints = data.drinks.map(drink => drink.strDrink).join(', ');
+                            hintBox.textContent = hints;
+                            hintBox.classList.add('visible');
+                        } else {
+                            hintBox.textContent = 'No results found';
+                            hintBox.classList.add('visible');
+                        }
+                    });
+            } else {
+                hintBox.classList.remove('visible');
+            }
+        }
+
+        function searchCocktail() {
+            const query = searchInput.value;
+            fetch(`https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.drinks) {
+                        const cocktail = data.drinks[0];
+                        cocktailCard.innerHTML = `
+                            <img src="${cocktail.strDrinkThumb}" alt="${cocktail.strDrink}">
+                            <h2>${cocktail.strDrink}</h2>
+                            <p><strong>Category:</strong> ${cocktail.strCategory}</p>
+                            <p><strong>Glass:</strong> ${cocktail.strGlass}</p>
+                            <p><strong>Instructions:</strong> ${cocktail.strInstructions}</p>
+                        `;
+                        cocktailCard.style.display = 'block';
+                        hintBox.classList.remove('visible'); 
+                    } else {
+                        cocktailCard.style.display = 'none';
+                        hintBox.textContent = 'No results found';
+                        hintBox.classList.add('visible');
+                    }
+                });
+        }
+    </script>
+</body>
+
+</html>
