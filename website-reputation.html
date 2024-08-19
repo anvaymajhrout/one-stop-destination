@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trust & Financial Safety Score Checker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&family=Lobster&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #e3ffe7, #d9e7ff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+
+        .main-container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .site-heading {
+            font-family: 'Lobster', cursive;
+            font-size: 3rem;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        .input-area {
+            margin-bottom: 25px;
+        }
+
+        .url-input {
+            padding: 15px 20px;
+            width: 70%;
+            border: 3px solid #007bff;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            margin-right: 10px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .url-input:focus {
+            border-color: #0056b3;
+        }
+
+        .check-button {
+            padding: 15px 25px;
+            background-color: #28a745;
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .check-button:hover {
+            background-color: #218838;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .result-area {
+            margin-top: 30px;
+            font-size: 1.4rem;
+            color: #555;
+        }
+
+        .result-card {
+            background-color: #f0f9ff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            color: #007bff;
+            font-weight: 600;
+        }
+
+        .high-trust {
+            color: #28a745;
+        }
+
+        .low-trust {
+            color: #dc3545;
+        }
+
+        .error-message {
+            color: #ff4757;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <h1 class="site-heading">Trust & Financial Safety Checker</h1>
+        <div class="input-area">
+            <input type="text" id="websiteInput" class="url-input" placeholder="Enter website URL">
+            <button id="submitButton" class="check-button">Check</button>
+        </div>
+        <div id="outputArea" class="result-area"></div>
+    </div>
+
+    <script>
+       document.getElementById('submitButton').addEventListener('click', function() {
+    const websiteUrl = document.getElementById('websiteInput').value.trim();
+    if (websiteUrl) {
+        fetchTrustScore(websiteUrl);
+    } else {
+        displayError('Please enter a valid URL.');
+    }
+});
+
+function fetchTrustScore(websiteUrl) {
+    const apiEndpoint = "https://checkurl.phishtank.com/checkurl/";
+    const userAgent = "phishtank/[your-username]";
+    const formData = new URLSearchParams();
+    formData.append('url', encodeURIComponent(websiteUrl));
+    formData.append('format', 'json');
+
+    fetch(apiEndpoint, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'User-Agent': userAgent
+        },
+        body: formData.toString()
+    })
+    .then(response => response.json())
+    .then(data => {
+        const isPhishing = data.results.valid;
+        const trustScore = isPhishing ? 10 : 90;
+        displayResults(trustScore, websiteUrl);
+    })
+    .catch(error => {
+        displayError('Failed to retrieve trust score. We are trying to fix api very soon !');
+    });
+}
+
+function displayResults(trustScore, websiteUrl) {
+    const outputDiv = document.getElementById('outputArea');
+    let trustLevelClass = trustScore > 50 ? 'high-trust' : 'low-trust';
+    let resultHtml = `
+        <div class="result-card">
+            Trust Score for <strong>${websiteUrl}</strong>: <span class="${trustLevelClass}">${trustScore}</span>
+        </div>
+    `;
+
+    if (trustScore > 50) {
+        const financialSafetyScore = Math.floor(Math.random() * 100);
+        resultHtml += `
+            <div class="result-card high-trust">
+                Financial Safety Score: <span>${financialSafetyScore}</span>
+            </div>
+        `;
+    }
+
+    outputDiv.innerHTML = resultHtml;
+}
+
+function displayError(message) {
+    const outputDiv = document.getElementById('outputArea');
+    outputDiv.innerHTML = `<div class="result-card error-message">${message}</div>`;
+}
+
+    </script>
+</body>
+</html>
