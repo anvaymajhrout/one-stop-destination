@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP Information Checker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #89f7fe, #66a6ff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #ffffff;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 550px;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 2rem;
+            letter-spacing: 1px;
+        }
+
+        .check-button {
+            padding: 1rem 2.5rem;
+            background-color: #ff5f6d;
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .check-button:hover {
+            background-color: #ff4e50;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .result {
+            margin-top: 2.5rem;
+            font-size: 1.2rem;
+            color: #555;
+            text-align: left;
+        }
+
+        .result .result-card {
+            background-color: #ffe9e9;
+            padding: 1.2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            margin-top: 1rem;
+        }
+
+        .result .highlight {
+            color: #ff4e50;
+            font-weight: 600;
+        }
+
+        .result .error-message {
+            color: #ff4757;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">IP Information Checker</h1>
+        <button id="checkIPButton" class="check-button">Check My IP Info</button>
+        <div id="resultDisplay" class="result">
+            
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('checkIPButton').addEventListener('click', function() {
+            fetchIPInfo();
+        });
+
+        function fetchIPInfo() {
+            const apiKey = 'apinotenteredduetosecurity'; 
+            const apiUrl = `https://ipinfo.io/json?token=${apiKey}`;
+
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    displayResults(data);
+                })
+                .catch(error => {
+                    displayError('Failed to retrieve IP information. Please try again.');
+                });
+        }
+
+        function displayResults(data) {
+            const resultDiv = document.getElementById('resultDisplay');
+            resultDiv.innerHTML = `
+                <div class="result-card">
+                    <strong>IP Address:</strong> <span class="highlight">${data.ip}</span>
+                </div>
+                <div class="result-card">
+                    <strong>Location:</strong> <span class="highlight">${data.city}, ${data.region}, ${data.country}</span>
+                </div>
+                <div class="result-card">
+                    <strong>ISP:</strong> <span class="highlight">${data.org}</span>
+                </div>
+                <div class="result-card">
+                    <strong>Timezone:</strong> <span class="highlight">${data.timezone}</span>
+                </div>
+                <div class="result-card">
+                    <strong>Latitude, Longitude:</strong> <span class="highlight">${data.loc}</span>
+                </div>
+            `;
+        }
+
+        function displayError(message) {
+            const resultDiv = document.getElementById('resultDisplay');
+            resultDiv.innerHTML = `<div class="result-card error-message">${message}</div>`;
+        }
+    </script>
+</body>
+</html>
