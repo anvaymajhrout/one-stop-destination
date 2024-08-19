@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Latest News</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background-color: #f4f4f9;
+            --primary-color: #ff5722;
+            --secondary-color: #4caf50;
+            --accent-color: #2196f3;
+            --text-color: #333;
+            --card-bg: #ffffff;
+            --card-border: #ddd;
+            --button-hover: #ff784e;
+            --header-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            font-family: 'Roboto', serif;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 3rem;
+            text-align: center;
+        }
+
+        .header {
+            background-color: var(--header-bg);
+            padding: 10px 20px;
+            width: 100%;
+            max-width: 1200px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--card-border);
+            text-align: center;
+        }
+
+        .category-select {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        select {
+            padding: 10px 15px;
+            font-size: 1.2rem;
+            border: 2px solid var(--secondary-color);
+            border-radius: 8px;
+            outline: none;
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        select:hover {
+            background-color: var(--button-hover);
+        }
+
+        .news-card {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            width: 100%;
+            max-width: 900px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .news-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            object-fit: cover;
+            max-height: 400px;
+        }
+
+        .news-card-content {
+            padding: 15px 0;
+            text-align: left;
+            width: 100%;
+        }
+
+        .news-card h2 {
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            font-size: 1.6rem;
+        }
+
+        .news-card p {
+            margin: 10px 0;
+            font-size: 1.1rem;
+        }
+
+        .news-card .meta {
+            font-size: 0.9rem;
+            color: var(--text-color);
+            margin: 10px 0;
+        }
+
+        .news-card .meta span {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .news-card a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 10px;
+            transition: color 0.3s ease;
+        }
+
+        .news-card a:hover {
+            color: var(--button-hover);
+        }
+
+        .news-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>Latest News</h1>
+    </div>
+    <div class="category-select">
+        <select id="categorySelect">
+            <option value="technology">Technology</option>
+            <option value="sports">Sports</option>
+        </select>
+    </div>
+    <div id="newsContainer" class="news-container"></div>
+
+    <script>
+        document.getElementById('categorySelect').addEventListener('change', fetchNews);
+
+        function fetchNews() {
+            const category = document.getElementById('categorySelect').value;
+            fetch(`https://newsapi.org/v2/top-headlines?category=${category}&country=us&apiKey=211cb43d38084a57a85ac9d6e9d5e84f`)
+                .then(response => response.json())
+                .then(data => {
+                    const newsContainer = document.getElementById('newsContainer');
+                    newsContainer.innerHTML = ''; 
+                    if (data.articles) {
+                        data.articles.forEach(article => {
+                            const newsCard = document.createElement('div');
+                            newsCard.className = 'news-card';
+                            newsCard.innerHTML = `
+                                <img src="${article.urlToImage || 'https://via.placeholder.com/900x400.png?text=No+Image'}" alt="${article.title}">
+                                <div class="news-card-content">
+                                    <h2>${article.title}</h2>
+                                    <p>${article.description || 'No description available.'}</p>
+                                    <div class="meta">
+                                        <span><strong>Source:</strong> ${article.source.name || 'Unknown'}</span>
+                                        <span><strong>Author:</strong> ${article.author || 'Anonymous'}</span>
+                                        <span><strong>Published:</strong> ${new Date(article.publishedAt).toLocaleDateString() || 'Unknown date'}</span>
+                                    </div>
+                                    <a href="${article.url}" target="_blank">Read more</a>
+                                </div>
+                            `;
+                            newsContainer.appendChild(newsCard);
+                        });
+                    } else {
+                        newsContainer.innerHTML = '<p>No news available for this category.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching news:', error);
+                });
+        }
+
+        
+        fetchNews();
+    </script>
+</body>
+
+</html>
